@@ -1,9 +1,3 @@
-//
-//      Name:        Kwok, Amanda
-//      Project:     3
-//      Due:         October 17, 2018
-//      Course:      CS-2450-01-F18
-//
 //      Description: 
 //                   Match Pairs is a memory game where the user matches pairs 
 //                   of tiles. When a game image is clicked, it will turn into 
