@@ -1,9 +1,4 @@
 //
-// Name:        Kwok, Amanda
-// Homework:    #3
-// Due:         December 3, 2018
-// Course:      CS-2450-01-F18
-//
 // Description: A program designed to list files and folders in the current 
 // directory using a tree.
 //
