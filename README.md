@@ -8,11 +8,11 @@ Uses Swing components to create applications with graphical user interfaces.
 Each top level file and folder in the repository is a stand-alone program/project. 
 
 To compile,
-''''
+```java
    javac ProgramName.java
-''''
+```
 
 To run,
-''''
+```java
    java ProgramName
-''''
+```
