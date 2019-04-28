@@ -1,9 +1,4 @@
 //
-// Name:        Kwok, Amanda
-// Project:     #4
-// Due:         November 9, 2018
-// Course:      CS-2450-01-F18
-//
 // Description: A program to showcase different dialogs. Users will have options
 //              to change the display text by its font family, style, size, and 
 //              foreground color. There is also an option to change the color of
