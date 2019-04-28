@@ -4,6 +4,8 @@
 //              foreground color. There is also an option to change the color of
 //              the background. 
 //
+// Uses JFontChooser to allow users to select the font to be used to display a file.
+// 
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
