@@ -1,13 +1,14 @@
-//      Description: 
-//                   Match Pairs is a memory game where the user matches pairs 
-//                   of tiles. When a game image is clicked, it will turn into 
-//                   the actual image of the tile. Once a second tile is clicked, 
-//                   both tiles remain revealed if the first tile matches the second;
-//                   otherwise, they will be flipped. In debug mode indicated by 
-//                   "java MemoryGame debug", the program will perform in the 
-//                   opposite manner where the game image will be displayed if 
-//                   tiles are matched.
-//                  
+//
+//      Name:       Kwok, Amanda
+//      Homework:   #1
+//      Due:        October 29, 2018
+//      Course:     CS-2450-01-F18
+//      Description: An improvement on the previous MemoryGame with an added menu bar
+//                  containing different options. 'Game Timer' controls the timer and is
+//                  only available when the timer is running. 'Reveal' shows all the game
+//                  and is unabilable in debug mode. 'View Help' displays a dialog on how
+//                  to play the game; the timer is suspended until the next tile is clicked.
+//
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -18,24 +19,73 @@ import java.util.ArrayList;
 import java.util.Collections;
 import javax.swing.Timer;
 
-public class MemoryGame implements ItemListener{
+public class MemoryGame implements ItemListener, ActionListener{
     
     private static int argsLength;
     private static String debugMode;
     private final JToggleButton[] tiles;
-    private JToggleButton tb1;
-    private JToggleButton tb2;
+    private JFrame frame;
+    private JMenuItem pause, resume;
+    private JToggleButton tb1, tb2;
     private JLabel display;
-    private Timer displayTimer;
-    private Timer flipTimer;
-    private Timer debugTimer;
+    private Timer displayTimer, flipTimer, debugTimer;
     private int tilesSelected;
-
+    private long elapsed;
+    private boolean aboutClicked;
+    private Instant start;
     
     public MemoryGame()
     {
-        JFrame frame = new JFrame("Memory Game");
+        frame = new JFrame("Memory Game");
         JPanel panel = new JPanel(new GridLayout(3,4,2,2));
+        JMenuBar jmb = new JMenuBar();
+        
+        //Creating the action menu
+        JMenu action = new JMenu("Action");
+        JMenu gameTimer = new JMenu("Game Timer");
+        pause = new JMenuItem("Pause", 'P');
+        resume = new JMenuItem("Resume", 'R');
+        JMenuItem reveal = new JMenuItem("Reveal", 'R');
+        JMenuItem exit = new JMenuItem("Exit", 'X');
+        
+        //Creating the help menu
+        JMenu help = new JMenu("Help");
+        JMenuItem viewHelp = new JMenuItem("View Help...",'H');
+        JMenuItem about = new JMenuItem("About",'A');
+        
+        //Adding specifications to components
+        action.setMnemonic('A');
+        gameTimer.setMnemonic('T');
+        pause.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, InputEvent.CTRL_MASK));
+        resume.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_MASK));
+        help.setMnemonic('H');
+        pause.setEnabled(false);
+        resume.setEnabled(false);
+
+        //Adding contents to proper submenus
+        gameTimer.add(pause);
+        gameTimer.add(resume);
+        action.add(gameTimer);
+        action.add(reveal);
+        action.addSeparator();
+        action.add(exit);
+        help.add(viewHelp);
+        help.addSeparator();
+        help.add(about);
+        jmb.add(action);
+        jmb.add(help);
+        frame.setJMenuBar(jmb);
+        
+        // Adding action listeners for the menu items
+        pause.addActionListener(this);
+        resume.addActionListener(this);
+        if (debugMode.equals("debug")) // This feature is disabled in debug mode
+            reveal.setEnabled(false);
+        else
+            reveal.addActionListener(this);
+        exit.addActionListener(this);
+        viewHelp.addActionListener(this);
+        about.addActionListener(this);
         
         // Setting up the frame.
         frame.setSize(700,500);
@@ -46,7 +96,7 @@ public class MemoryGame implements ItemListener{
         // Adding the initial time display.
         display = new JLabel("00:00:00", SwingConstants.CENTER);
         frame.add(display, BorderLayout.NORTH);
-        
+
         // Array containing icons.
         ImageIcon[] pictures = new ImageIcon[]{new ImageIcon(("1.png")), 
             new ImageIcon(("2.png")),
@@ -70,7 +120,6 @@ public class MemoryGame implements ItemListener{
             tiles[i] = new JToggleButton(pictures[6]);
             tiles[i].setSelectedIcon(pictures[picturesIndex]);
             tiles[i].setActionCommand(commandID[commandIDindex]);
-            
             tiles[i+1] = new JToggleButton(pictures[6]);
             tiles[i+1].setSelectedIcon(pictures[picturesIndex]);
             tiles[i+1].setActionCommand(commandID[commandIDindex]);
@@ -83,8 +132,7 @@ public class MemoryGame implements ItemListener{
             else
             {
                 tiles[i].setDisabledIcon(pictures[picturesIndex]);
-                tiles[i+1].setDisabledIcon(pictures[picturesIndex]);  
-                
+                tiles[i+1].setDisabledIcon(pictures[picturesIndex]);   
             }
             arrlist.add(tiles[i]);
             arrlist.add(tiles[i+1]);
@@ -114,17 +162,108 @@ public class MemoryGame implements ItemListener{
         debugTimer = new Timer (1500, ae -> {
             tb1.setSelected(true);
             tb2.setSelected(true);
-            
             debugTimer.stop();
         });    
+        
+        // Creating a timer to display the elapsed time
+        start = Instant.now();
+        displayTimer = new Timer(1000, ae -> {  
+            elapsed = Duration.between(start, Instant.now()).getSeconds();
+            display.setText(String.format("%02d:%02d:%02d", elapsed/3600,
+                (elapsed%3600)/60, elapsed%60));  
+        });
         
         frame.add(panel, BorderLayout.CENTER);
         frame.setVisible(true);       
     }
-
+    
+    public void actionPerformed(ActionEvent ae) 
+    {
+        String comStr = ae.getActionCommand();
+        
+        if (comStr.equals("Pause"))
+        {   
+            pause.setEnabled(false);
+            displayTimer.stop();
+            resume.setEnabled(true);
+        }
+        else if (comStr.equals("Resume"))
+        {
+            restartTimer();
+        }
+        else if (comStr.equals("Reveal"))
+        {
+            if (displayTimer.isRunning())
+            {
+                pause.setEnabled(false);
+                resume.setEnabled(false);
+                displayTimer.stop();
+            }
+            for (int i = 0; i < 12; i++)
+                tiles[i].setEnabled(false);
+        }
+        else if (comStr.equals("Exit"))
+            System.exit(0);
+        else if (comStr.equals("View Help..."))
+        {
+            if (displayTimer.isRunning())
+            {
+                // Disable 'pause' and 'resume' when timer is not running
+                pause.setEnabled(false);
+                resume.setEnabled(false);
+                displayTimer.stop();
+            }
+            
+            // The timer will be clicked
+            aboutClicked = true;
+            JOptionPane.showMessageDialog(frame,
+                "When a game image is clicked, it will turn into the \n"
+                + "actual image of the tile. Once a second tile is \n"
+                + "clicked, both tiles remain revealed if the first \n"
+                + "tile matches the second; otherwise, they will be \n"
+                + "flipped. In debug mode indicated by \"java MemoryGame\n"
+                + "debug\", the program will perform in the opposite \n"
+                + "manner where the game image will be displayed if \n"
+                + "tiles are matched.",
+                "Help", JOptionPane.PLAIN_MESSAGE);
+        }
+        else if (comStr.equals("About"))
+        {
+            if (displayTimer.isRunning())
+                displayTimer.stop();
+            
+            JOptionPane.showMessageDialog(frame, "Match Pairs is a memory game "+
+            "where the user \nmatches pairs of tiles. In debug mode indicated \nby " +
+            "\"java MemoryGame debug\", the program will \nperform in the " +
+            "opposite manner where the game \nimage will be displayed if " +
+            "tiles are matched.\n (c) Amanda Kwok", "About", JOptionPane.INFORMATION_MESSAGE, 
+            new ImageIcon("MemoryGame.png"));
+            
+            if (tilesSelected!=0 && tilesSelected!=12)
+                restartTimer();       
+        }
+    }
+    public void restartTimer()
+    {
+        start = Instant.now();
+        long pastElapsed = elapsed;
+        // Display the duration from (when the timer is restarted -> current time)+the previous stored time 
+        displayTimer = new Timer(1000, t -> {
+            long newElapsed=Duration.between(start, Instant.now()).getSeconds();
+            display.setText(String.format("%02d:%02d:%02d", (newElapsed+pastElapsed)/3600,
+                ((newElapsed+pastElapsed)%3600)/60, (newElapsed+pastElapsed)%60));  
+            // Update 'elapsed' to include the new elapsedTime
+            elapsed = newElapsed+pastElapsed;
+        });
+        // Enable 'pause' and 'resume' when timer is running
+        displayTimer.start();
+        pause.setEnabled(true);
+        resume.setEnabled(false);
+        aboutClicked=false;
+    }
+    
     @Override
     public void itemStateChanged(ItemEvent ie) {
-
         // Prevents user from selecting tiles while the flipTimer is running. 
         if (flipTimer.isRunning())
         {
@@ -140,22 +279,22 @@ public class MemoryGame implements ItemListener{
 
         boolean allFlipped=true;
         tilesSelected++;
-        
+        if(aboutClicked)
+        {
+            aboutClicked=false;
+            restartTimer();
+        }
         // Starts the display timer when the first tile is clicked
         if (tilesSelected==1)
         {
-            Instant start = Instant.now();
-            displayTimer = new Timer(1000, ae -> {  
-                long elapsed = Duration.between(start, Instant.now()).getSeconds();
-                display.setText(String.format("%02d:%02d:%02d", elapsed/3600,
-                    (elapsed%3600)/60, elapsed%60));  
-            });
-            displayTimer.start();  
+            start = Instant.now();
+            displayTimer.start();
+            pause.setEnabled(true);
+            resume.setEnabled(false);
         }
      
         if (debugMode.equals("debug"))
         {
-            
             allFlipped=true;
             if (tilesSelected%2!=0)
                 tb1 = (JToggleButton)ie.getItem();
@@ -178,7 +317,12 @@ public class MemoryGame implements ItemListener{
                     allFlipped = false;
             }
             if (allFlipped)
+            {
                 displayTimer.stop();
+                // Disable 'pause' and 'resume' when timer is not running
+                pause.setEnabled(false);
+                resume.setEnabled(false);
+            }
         }
         else 
         {
@@ -206,7 +350,12 @@ public class MemoryGame implements ItemListener{
             }       
             
             if (allFlipped)
+            {
                 displayTimer.stop();
+                // Disable 'pause' and 'resume' when timer is not running
+                pause.setEnabled(false);
+                resume.setEnabled(false);
+            }
         }
     }
     
@@ -220,3 +369,4 @@ public class MemoryGame implements ItemListener{
         SwingUtilities.invokeLater(()-> new MemoryGame());
     }
 }
+
