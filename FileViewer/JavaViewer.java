@@ -1,12 +1,9 @@
 //
-// Name:        Kwok, Amanda
-// Homework:    #3
-// Due:         December 3, 2018
-// Course:      CS-2450-01-F18
-//
 // Description: A program designed to read a java source file and diplay its 
 // contents in the text area component. Options to cut, copy, and paste are 
 // available by right clicking in the pane.
+// 
+// Uses JTreeFileChooser is a visual aid to select the source file.
 //
 import javax.swing.*;
 import java.awt.*;
