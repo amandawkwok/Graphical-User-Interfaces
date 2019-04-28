@@ -1,9 +1,4 @@
 //
-// Name:        Kwok, Amanda
-// Project:     #4
-// Due:         November 9, 2018
-// Course:      CS-2450-01-F18
-//
 // Description: A program to create a dialog that allows the user to choose a font. 
 //              Within the dialog, the user will be able to change the font family, 
 //              style, and size, and see a sample of their selections.
