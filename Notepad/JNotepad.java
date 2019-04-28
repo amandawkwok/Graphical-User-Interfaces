@@ -1,11 +1,8 @@
 //
-// Name:        Kwok, Amanda
-// Project:     #5
-// Due:         December 6, 2018
-// Course:      CS-2450-01-F18
-//
 // Description: A program to create the Windows version of Notepad. The user
 // is able to designate a file to open as a command line argument.
+//
+// Uses JFontChooser as a new dialog to allow users to designate the font to be displayed.
 //
 import javax.swing.*;
 import java.awt.*;
