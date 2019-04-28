@@ -1,13 +1,17 @@
 //
-//      Name:       Kwok, Amanda
-//      Homework:   #1
-//      Due:        October 29, 2018
-//      Course:     CS-2450-01-F18
-//      Description: An improvement on the previous MemoryGame with an added menu bar
-//                  containing different options. 'Game Timer' controls the timer and is
-//                  only available when the timer is running. 'Reveal' shows all the game
-//                  and is unabilable in debug mode. 'View Help' displays a dialog on how
-//                  to play the game; the timer is suspended until the next tile is clicked.
+//      Description: Match Pairs is a memory game where the user matches pairs 
+//                   of tiles. When a game image is clicked, it will turn into 
+//                   the actual image of the tile. Once a second tile is clicked, 
+//                   both tiles remain revealed if the first tile matches the second;
+//                   otherwise, they will be flipped. In debug mode indicated by 
+//                   "java MemoryGame debug", the program will perform in the 
+//                   opposite manner where the game image will be displayed if 
+//                   tiles are matched.
+
+//                   'Game Timer' controls the timer and is only available when the timer 
+//                   is running. 'Reveal' shows all the game tiles and is unabilable in 
+//                   debug mode. 'View Help' displays a dialog on how to play the game; 
+//                   the timer is suspended until the next tile is clicked.
 //
 
 import javax.swing.*;
